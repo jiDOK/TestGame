@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System;
 
-namespace HelloWorld;
 
 class Program
 {
@@ -29,6 +28,7 @@ class Program
 public class Game
 {
     List<Bullet> bullets = new List<Bullet>(32);
+    List<Enemy> enemies = new List<Enemy>();
     Player player;
     float enemyTimer;
 
@@ -49,15 +49,18 @@ public class Game
         if (enemyTimer >= 3f)
         {
             enemyTimer = 0f;
+            int randX = Raylib.GetRandomValue(0, 800);
+            Enemy enemy = new Enemy(randX, -50);
+            enemies.Add(enemy);
         }
         player.Update();
         for (int i = 0; i < bullets.Count; i++)
         {
             bullets[i].Update();
-            //if (!bullets[i].isAlive)
-            //{
-            //    bullets.Remove(bullets[i]);
-            //}
+        }
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            enemies[i].Update();
         }
     }
     public void Draw()
@@ -66,6 +69,10 @@ public class Game
         for (int i = 0; i < bullets.Count; i++)
         {
             bullets[i].Draw();
+        }
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            enemies[i].Draw();
         }
     }
 }
@@ -78,7 +85,6 @@ public class Player
     int posX = 400;
     int posY = 240;
 
-
     public Player(List<Bullet> bullets)
     {
         this.bullets = bullets;
@@ -86,25 +92,25 @@ public class Player
 
     public void Update()
     {
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_W))
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_W)||Raylib.IsKeyDown(KeyboardKey.KEY_UP))
         {
             posY -= 3;
-            if(posY < 0) posY = 0;
+            if (posY < 0) posY = 0;
         }
         else if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
         {
             posY += 3;
-            if(posY > 480) posY = 480;
+            if (posY > 480) posY = 480;
         }
         if (Raylib.IsKeyDown(KeyboardKey.KEY_A))
         {
             posX -= 3;
-            if(posX < 0) posX = 0;
+            if (posX < 0) posX = 0;
         }
         else if (Raylib.IsKeyDown(KeyboardKey.KEY_D))
         {
             posX += 3;
-            if(posX > 800) posX = 800;
+            if (posX > 800) posX = 800;
         }
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
         {
@@ -150,7 +156,27 @@ public class Bullet
     }
 }
 
+public class Enemy
+{
+    int posX;
+    int posY;
 
+    public Enemy(int x, int y)
+    {
+        posX = x;
+        posY = y;
+    }
+
+    public void Update()
+    {
+        posY += 3;
+    }
+
+    public void Draw()
+    {
+        Raylib.DrawRectangle(posX, posY, 20, 20, Color.ORANGE);
+    }
+}
 
 
 
