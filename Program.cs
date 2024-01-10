@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using System.Collections.Generic;
 using System;
+using System.Numerics;
 
 
 class Program
@@ -53,6 +54,28 @@ public class Game
             Enemy enemy = new Enemy(randX, -50);
             enemies.Add(enemy);
         }
+        // Collision check
+        // genestete for-Schleife fuer Enemies u. Bullets
+        for (int b = bullets.Count - 1; b >= 0; b--)
+        {
+            for (int e = enemies.Count - 1; e >= 0; e--)
+            {
+                // Vector2 jeweils aus posX u. posY erstellen
+                Vector2 bPos = bullets[b].Pos;
+                Vector2 ePos = enemies[e].Pos;
+                float bRad = bullets[b].Radius;
+                float eRad = enemies[e].Radius;
+                // Raylib.CheckCollisionCircles()-Methode benutzen
+                // wenn sie kollidieren: aus den Listen rauswerfen
+                if (Raylib.CheckCollisionCircles(bPos, bRad, ePos, eRad))
+                {
+                    bullets.Remove(bullets[b]);
+                    enemies.Remove(enemies[e]);
+                    break;
+                }
+            }
+        }
+        // player Punkte geben
         player.Update();
         for (int i = 0; i < bullets.Count; i++)
         {
@@ -92,7 +115,7 @@ public class Player
 
     public void Update()
     {
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_W)||Raylib.IsKeyDown(KeyboardKey.KEY_UP))
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP))
         {
             posY -= 3;
             if (posY < 0) posY = 0;
@@ -127,9 +150,13 @@ public class Player
 
 public class Bullet
 {
-    float posX;
-    float posY;
+    public Vector2 Pos => new Vector2(posX, posY);
+    int posX;
+    int posY;
+
+    public float Radius => radius;
     float radius = 5f;
+
     public bool isAlive = true;
 
     public static event Action<Bullet> LeftScreen;
@@ -158,6 +185,11 @@ public class Bullet
 
 public class Enemy
 {
+    public float Radius => sizeX / 2;
+    int sizeX = 20;
+    int sizeY = 20;
+
+    public Vector2 Pos => new Vector2(posX, posY);
     int posX;
     int posY;
 
@@ -174,7 +206,8 @@ public class Enemy
 
     public void Draw()
     {
-        Raylib.DrawRectangle(posX, posY, 20, 20, Color.ORANGE);
+        Raylib.DrawRectangle(posX - sizeX/2, posY - sizeY/2, sizeX, sizeY, Color.ORANGE);
+        //Raylib.DrawCircle(posX, posY, sizeX/2, Color.BLACK);
     }
 }
 
