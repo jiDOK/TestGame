@@ -155,10 +155,11 @@ public class Player
     public void Draw()
     {
         //Raylib.DrawRectangle(posX, posY, sizeX, sizeY, Color.BLUE);
-        Rectangle rect = new Rectangle(posX - sizeX / 2, posY - sizeY / 2, sizeX, sizeY);
-        Vector2 origin = new Vector2(0, 0);
+        Rectangle rect = new Rectangle(posX, posY, sizeX, sizeY);
+        Vector2 origin = new Vector2(sizeX / 2, sizeY / 2);
         Raylib.DrawRectanglePro(rect, origin, angle, Color.BLUE);
         Raylib.DrawCircle((int)posX, (int)posY, 3f, Color.RED);
+
     }
 }
 
