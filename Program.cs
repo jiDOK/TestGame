@@ -105,8 +105,8 @@ public class Player
     List<Bullet> bullets = new List<Bullet>();
     int sizeX = 15;
     int sizeY = 30;
-    float posX = 400;
-    float posY = 240;
+    float posX = 400f;
+    float posY = 240f;
     float angle;
     Vector2 startDir = new Vector2(0f, -1f);
     Vector2 dir = new Vector2(0f, -1f);
@@ -118,6 +118,8 @@ public class Player
 
     public void Update()
     {
+        dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * 45f);
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_R)) Console.WriteLine(dir.X.ToString() + " " + dir.Y.ToString());
         if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP))
         {
             //posY -= 3;
