@@ -103,10 +103,13 @@ public class Game
 public class Player
 {
     List<Bullet> bullets = new List<Bullet>();
-    int sizeX = 5;
-    int sizeY = 10;
-    int posX = 400;
-    int posY = 240;
+    int sizeX = 15;
+    int sizeY = 30;
+    float posX = 400;
+    float posY = 240;
+    float angle;
+    Vector2 startDir = new Vector2(0f, -1f);
+    Vector2 dir = new Vector2(0f, -1f);
 
     public Player(List<Bullet> bullets)
     {
@@ -117,34 +120,45 @@ public class Player
     {
         if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP))
         {
-            posY -= 3;
+            //posY -= 3;
+            posX += dir.X;
+            posY += dir.Y;
             if (posY < 0) posY = 0;
         }
-        else if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
-        {
-            posY += 3;
-            if (posY > 480) posY = 480;
-        }
+        //else if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
+        //{
+        //    posY += 3;
+        //    if (posY > 480) posY = 480;
+        //}
         if (Raylib.IsKeyDown(KeyboardKey.KEY_A))
         {
-            posX -= 3;
-            if (posX < 0) posX = 0;
+            //posX -= 3;
+            //if (posX < 0) posX = 0;
+            angle -= 3f;
+            dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * angle);
         }
         else if (Raylib.IsKeyDown(KeyboardKey.KEY_D))
         {
-            posX += 3;
-            if (posX > 800) posX = 800;
+            //posX += 3;
+            //if (posX > 800) posX = 800;
+            angle += 3f;
+            dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * angle);
         }
+
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
         {
-            Bullet b = new Bullet(posX, posY);
+            Bullet b = new Bullet((int)posX, (int)posY);
             bullets.Add(b);
         }
     }
 
     public void Draw()
     {
-        Raylib.DrawRectangle(posX, posY, sizeX, sizeY, Color.BLUE);
+        //Raylib.DrawRectangle(posX, posY, sizeX, sizeY, Color.BLUE);
+        Rectangle rect = new Rectangle(posX - sizeX / 2, posY - sizeY / 2, sizeX, sizeY);
+        Vector2 origin = new Vector2(0, 0);
+        Raylib.DrawRectanglePro(rect, origin, angle, Color.BLUE);
+        Raylib.DrawCircle((int)posX, (int)posY, 3f, Color.RED);
     }
 }
 
@@ -206,7 +220,7 @@ public class Enemy
 
     public void Draw()
     {
-        Raylib.DrawRectangle(posX - sizeX/2, posY - sizeY/2, sizeX, sizeY, Color.ORANGE);
+        Raylib.DrawRectangle(posX - sizeX / 2, posY - sizeY / 2, sizeX, sizeY, Color.ORANGE);
         //Raylib.DrawCircle(posX, posY, sizeX/2, Color.BLACK);
     }
 }
