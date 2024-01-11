@@ -21,6 +21,7 @@ class Program
             game.Draw();
             Raylib.EndDrawing();
         }
+        game.Unsubscribe();
 
         Raylib.CloseWindow();
     }
@@ -36,12 +37,25 @@ public class Game
     public Game()
     {
         player = new Player(bullets);
+        player.BulletSpawned += OnBulletSpawned;
         Bullet.LeftScreen += OnLeftScreen;
+    }
+
+    public void Unsubscribe()
+    {
+        Bullet.LeftScreen -= OnLeftScreen;
+        player.BulletSpawned -= OnBulletSpawned;
     }
 
     public void OnLeftScreen(Bullet bullet)
     {
         bullets.Remove(bullet);
+    }
+
+    public void OnBulletSpawned(float x, float y)
+    {
+        Bullet b = new Bullet((int)x, (int)y);
+        bullets.Add(b);
     }
 
     public void Update()
@@ -110,6 +124,9 @@ public class Player
     float angle;
     Vector2 startDir = new Vector2(0f, -1f);
     Vector2 dir = new Vector2(0f, -1f);
+    float speed;
+
+    public event Action<float, float>? BulletSpawned;
 
     public Player(List<Bullet> bullets)
     {
@@ -120,6 +137,10 @@ public class Player
     {
         dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * 45f);
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_R)) Console.WriteLine(dir.X.ToString() + " " + dir.Y.ToString());
+        if(posX < 0 || posX > 800 || Raylib.IsKeyPressed(KeyboardKey.KEY_LEFT_SHIFT))
+        {
+            speed = 0f;
+        }
         if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP))
         {
             //posY -= 3;
@@ -134,23 +155,28 @@ public class Player
         //}
         if (Raylib.IsKeyDown(KeyboardKey.KEY_A))
         {
+            speed = -3f;
             //posX -= 3;
             //if (posX < 0) posX = 0;
-            angle -= 3f;
-            dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * angle);
+            //angle -= 3f;
+            //dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * angle);
         }
         else if (Raylib.IsKeyDown(KeyboardKey.KEY_D))
         {
+            speed = 3f;
             //posX += 3;
             //if (posX > 800) posX = 800;
-            angle += 3f;
-            dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * angle);
+            //angle += 3f;
+            //dir = Raymath.Vector2Rotate(startDir, Raylib.DEG2RAD * angle);
         }
+
+        posX += speed;
 
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
         {
-            Bullet b = new Bullet((int)posX, (int)posY);
-            bullets.Add(b);
+            BulletSpawned?.Invoke(posX, posY);
+            //Bullet b = new Bullet((int)posX, (int)posY);
+            //bullets.Add(b);
         }
     }
 
@@ -176,7 +202,7 @@ public class Bullet
 
     public bool isAlive = true;
 
-    public static event Action<Bullet> LeftScreen;
+    public static event Action<Bullet>? LeftScreen;
 
     public Bullet(int x, int y)
     {
