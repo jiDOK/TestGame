@@ -195,6 +195,7 @@ public class Bullet
     float posX;
     float posY;
     Vector2 dir;
+    float speed = 5;
 
     public float Radius => radius;
     float radius = 5f;
@@ -213,8 +214,8 @@ public class Bullet
     public void Update()
     {
         //posY -= 5;
-        posX += dir.X;
-        posY += dir.Y;
+        posX += dir.X * speed;
+        posY += dir.Y * speed;
 
         if (posY < 0 || posY > 480 || posX < 0 || posX > 800)
         {
